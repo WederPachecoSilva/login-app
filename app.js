@@ -2,13 +2,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const exphbs = require('express-hanblebars')
+const exphbs = require('express-handlebars')
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
-const session = require(express-session);
+const session = require('express-session');
 const passport = require('passport');
 let LocalStrategy = require('passport-local').Strategy;
-const mongo - require('mongodb');
+const mongo = require('mongodb');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/loginapp');
@@ -38,6 +38,10 @@ app.use(session({
   saveUnitializes: true,
   resave: true
 }));
+
+// Inicializa passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Configura Middleware de validação
 app.use(expressValidator({
@@ -76,4 +80,4 @@ app.set('port', (process.env.PORT || 3000));
 
 app.listen(app.get('port'), () => {
   console.log('Servidor rodando na porta ' + app.get('port'));
-})
+});
