@@ -1,5 +1,12 @@
 <h2 class="page-header">Faça o seu cadastro:</h2>
-<form action="users/register" method="post">
+{{#if errors }}
+  {{#each errors}}
+    <div class="alert alert-danger">
+      {{ msg }}
+    </div>
+  {{/each}}
+{{/if}}
+<form action="register" method="post">
   <div class="form-group">
     <label>Nome</label>
     <input type="text" class="form-control" name="name" placeholder="nome">
@@ -15,6 +22,10 @@
   <div class="form-group">
     <label>Senha</label>
     <input type="password" class="form-control" name="password" placeholder="senha">
+  </div>
+  <div class="form-group">
+    <label>Confirme senha</label>
+    <input type="password" class="form-control" name="password2" placeholder="senha">
   </div>
   <button type="submit" class="btn btn-primary">Cadastrar</button>
 </form>
