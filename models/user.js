@@ -27,3 +27,15 @@ module.exports.createUser = function (newUser, callback) {
     })
   })
 }
+
+module.exports.getUserByUsername = function (username, callback) {
+  let query = { username: username };
+  User.findOne(query, callback)
+}
+
+module.exports.comparePassword = function (candidatePassword, hash, callback) {
+  bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+    if (err) throw err;
+    callback(null, isMatch);
+  })
+}
