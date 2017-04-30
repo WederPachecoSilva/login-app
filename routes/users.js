@@ -1,7 +1,7 @@
 const express = require('express');
 let router = express.Router();
 
-let user = require('../models/user');
+let User = require('../models/user');
 
 // Cadastro
 router.get('/register', (req, res) => {

@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-mongoose.connect('mongodb://localhost/loginapp');
-
-let db = mongoose.connection;
-
 let UserSchema = mongoose.Schema({
   username: {
     type: String,
