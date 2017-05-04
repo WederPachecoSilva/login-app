@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Express Session Middleware
 app.use(session({
   secret: 'minhachavesecreta',
-  saveUnitializes: true,
+  saveUnitialized: true,
   resave: true
 }));
 

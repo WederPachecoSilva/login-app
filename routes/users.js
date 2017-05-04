@@ -75,19 +75,36 @@ passport.use(new LocalStrategy(
   }
 ));
 
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 router.post('/login',
-  passport.authenticate('local', {
+  passport.authenticate('local',
+  {
     successRedirect: '/',
     failureRedirect: '/users/login',
     failureFlash: true
-  }),
+  }
+),
   (req, res) => {
+    let username = req.body.username;
     res.redirect('/');
 });
 
 // Logout
 router.get('/logout', (req, res) => {
-  res.render('logout');
+  req.logout();
+
+  req.flash('success_msg', 'Você está deslogado(a)');
+
+  res.redirect('/users/login');
 });
 
 module.exports = router;
