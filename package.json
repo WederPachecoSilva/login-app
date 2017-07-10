@@ -4,7 +4,7 @@
   "description": "App para aprendizado de autentificação e autorização em NodeJS usando passport",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon app"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "express-messages": "^1.0.1",
     "express-session": "^1.15.2",
     "express-validator": "^3.2.0",
-    "mongodb": "^2.2.26",
+    "mongodb": "^2.2.29",
     "mongoose": "^4.9.6",
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",

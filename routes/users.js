@@ -1,23 +1,19 @@
 const express = require('express');
-let router = express.Router();
+const router = express.Router();
 const passport = require('passport');
-let LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
 
-let User = require('../models/user');
+const User = require('../models/user');
 
-// Cadastro
+// Solicita cadastro
 router.get('/register', (req, res) => {
   res.render('register');
 });
 
+// Cadastro
 router.post('/register', (req, res) => {
-  let name = req.body.name;
-  let username = req.body.username;
-  let email = req.body.email;
-  let password = req.body.password;
-  let password2 = req.body.password2;
+  const { name, username, email, password, password2 } = req.body;
 
-  // Validação
   req.checkBody('name', 'Preencha o nome').notEmpty();
   req.checkBody('email', 'Preencha o email').notEmpty();
   req.checkBody('email', 'O email não é válido').isEmail();
@@ -28,16 +24,9 @@ router.post('/register', (req, res) => {
   let errors = req.validationErrors();
 
   if (errors) {
-    res.render('register', {
-      errors: errors
-    })
+    res.render('register', { errors });
   } else {
-    let newUser = new User({
-      name: name,
-      email: email,
-      username: username,
-      password: password
-    });
+    let newUser = new User({ name, email, username, password });
 
     User.createUser(newUser, (err, user) => {
       if (err) throw err;
@@ -46,7 +35,12 @@ router.post('/register', (req, res) => {
 
     req.flash('success_msg', 'Você está registrado e agora pode se conectar');
 
-    res.redirect('/users/login');
+    req.logIn(newUser, err => {
+      if (err) throw err;
+      console.log(req.user)
+      return res.redirect('/')
+    })
+    // res.redirect('/users/login');
   }
 });
 
@@ -55,50 +49,53 @@ router.get('/login', (req, res) => {
   res.render('login')
 });
 
+// Configura o passport com o Local Strategy
 passport.use(new LocalStrategy(
   function(username, password, done) {
     User.getUserByUsername(username, (err, user) => {
-      if (err) throw err;
+      if (err) return done(err);
       if (!user) {
-        return done(null, false, {message: 'Usuário Desconhecido'})
+        return done(null, false, { message: 'Usuário Desconhecido' })
       }
 
-      User.comparePassword(password, user.password, function(err, isMatch) {
+      User.comparePassword(password, user.password, (err, isMatch) => {
         if (err) throw err;
         if (isMatch) {
           return done(null, user);
         } else {
-          return done(null, false, {message: 'Senha Inválida'})
+          return done(null, false, { message: 'Senha Inválida' })
         }
       })
     })
   }
 ));
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.getUserById(id, function(err, user) {
+passport.deserializeUser((id, done) => {
+  User.getUserById(id, (err, user) => {
     done(err, user);
   });
 });
 
 router.post('/login',
   passport.authenticate('local',
-  {
-    successRedirect: '/',
-    failureRedirect: '/users/login',
-    failureFlash: true
-  }
-),
+    {
+      successRedirect: '/',
+      failureRedirect: '/users/login',
+      failureFlash: true
+    }
+  ),
   (req, res) => {
-    let username = req.body.username;
+    const { username } = req.body;
     res.redirect('/');
-});
+    console.log('executei')
+  }
+);
 
-// Logout
+//logout
 router.get('/logout', (req, res) => {
   req.logout();
 

@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars')
 const expressValidator = require('express-validator');
@@ -8,7 +7,6 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 let LocalStrategy = require('passport-local').Strategy;
-const mongo = require('mongodb');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/loginapp');
@@ -27,15 +25,18 @@ app.set('view engine', 'handlebars');
 // Parseadores
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 // Configura diretório estático
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Express Session Middleware
+// Este middleware armazera sessions em memória local e não é 
+// adequado para produção, apenas para desenvolvimento.
+// Também não é necessário o módulo cookie-parser, pois esse 
+// middleware é capaz de ler e escrever cookies sozinho.
 app.use(session({
-  secret: 'minhachavesecreta',
-  saveUnitialized: true,
+  secret: 'minhachavevaiaqui',
+  saveUninitialized: true,
   resave: true
 }));
 
@@ -69,9 +70,11 @@ app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
   next();
 });
 
+//configura rotas
 app.use('/', routes);
 app.use('/users', users);
 
@@ -79,5 +82,5 @@ app.use('/users', users);
 app.set('port', (process.env.PORT || 3000));
 
 app.listen(app.get('port'), () => {
-  console.log('Servidor rodando na porta ' + app.get('port'));
+  console.log(`Servidor rodando na porta ${ app.get('port') }`);
 });
